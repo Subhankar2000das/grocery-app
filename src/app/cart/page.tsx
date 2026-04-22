@@ -30,7 +30,6 @@ const CartPage = () => {
     control,
     handleSubmit,
     reset,
-    watch,
     formState: { errors, isValid },
   } = useForm<IAddressFormValues>({
     resolver: yupResolver(addressSchema),
@@ -54,18 +53,6 @@ const CartPage = () => {
       reset(savedAddress);
     }
   }, [savedAddress, reset]);
-
-  const watchedValues = watch();
-
-  useEffect(() => {
-    const hasAnyValue = Object.values(watchedValues).some((value) => value?.trim());
-
-    if (!hasAnyValue) {
-      return;
-    }
-
-    setAddress(watchedValues);
-  }, [watchedValues, setAddress]);
 
   const onSubmit = async (values: IAddressFormValues) => {
     if (!cartItems.length) {

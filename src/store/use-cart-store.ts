@@ -44,10 +44,15 @@ const getInitialLastAction = (): ILastAction => ({
 });
 
 const getStoredCartItems = (): ICartItem[] => {
-  if (typeof window === "undefined") return [];
+  if (typeof window === "undefined") {
+    return [];
+  }
 
   const storedCart = localStorage.getItem(CART_STORAGE_KEY);
-  if (!storedCart) return [];
+
+  if (!storedCart) {
+    return [];
+  }
 
   try {
     return JSON.parse(storedCart) as ICartItem[];
@@ -57,10 +62,15 @@ const getStoredCartItems = (): ICartItem[] => {
 };
 
 const getStoredAddress = (): IAddressFormValues | null => {
-  if (typeof window === "undefined") return null;
+  if (typeof window === "undefined") {
+    return null;
+  }
 
   const storedAddress = localStorage.getItem(ADDRESS_STORAGE_KEY);
-  if (!storedAddress) return null;
+
+  if (!storedAddress) {
+    return null;
+  }
 
   try {
     return JSON.parse(storedAddress) as IAddressFormValues;
@@ -70,10 +80,15 @@ const getStoredAddress = (): IAddressFormValues | null => {
 };
 
 const getStoredLastAction = (): ILastAction => {
-  if (typeof window === "undefined") return getInitialLastAction();
+  if (typeof window === "undefined") {
+    return getInitialLastAction();
+  }
 
   const storedLastAction = localStorage.getItem(LAST_ACTION_STORAGE_KEY);
-  if (!storedLastAction) return getInitialLastAction();
+
+  if (!storedLastAction) {
+    return getInitialLastAction();
+  }
 
   try {
     return JSON.parse(storedLastAction) as ILastAction;
@@ -87,7 +102,9 @@ const persistCartState = (
   address: IAddressFormValues | null,
   lastAction: ILastAction
 ) => {
-  if (typeof window === "undefined") return;
+  if (typeof window === "undefined") {
+    return;
+  }
 
   localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cartItems));
   localStorage.setItem(ADDRESS_STORAGE_KEY, JSON.stringify(address));
@@ -115,9 +132,9 @@ export const useCartStore = create<ICartStore>((set, get) => ({
 
     set({
       cartItems: storedCartItems,
-      address: storedAddress,
-      lastAction: storedLastAction,
       appliedCoupon,
+      lastAction: storedLastAction,
+      address: storedAddress,
       isHydrated: true,
     });
   },
@@ -157,7 +174,9 @@ export const useCartStore = create<ICartStore>((set, get) => ({
       (cartItem) => cartItem.id === itemId
     );
 
-    if (!existingCartItem) return;
+    if (!existingCartItem) {
+      return;
+    }
 
     const updatedCartItems =
       existingCartItem.quantity === 1
@@ -188,7 +207,9 @@ export const useCartStore = create<ICartStore>((set, get) => ({
       (cartItem) => cartItem.id === itemId
     );
 
-    if (!existingCartItem) return;
+    if (!existingCartItem) {
+      return;
+    }
 
     const updatedCartItems = state.cartItems.filter(
       (cartItem) => cartItem.id !== itemId
@@ -275,7 +296,9 @@ export const useCartStore = create<ICartStore>((set, get) => ({
     const state = get();
     const { lastAction, cartItems, address } = state;
 
-    if (!lastAction.item || !lastAction.type) return;
+    if (!lastAction.item || !lastAction.type) {
+      return;
+    }
 
     let updatedCartItems: ICartItem[] = [...cartItems];
 
@@ -286,8 +309,13 @@ export const useCartStore = create<ICartStore>((set, get) => ({
 
       if (!existingCartItem) {
         const resetLastAction = getInitialLastAction();
+
         persistCartState(cartItems, address, resetLastAction);
-        set({ lastAction: resetLastAction });
+
+        set({
+          lastAction: resetLastAction,
+        });
+
         return;
       }
 
@@ -333,6 +361,7 @@ export const useCartStore = create<ICartStore>((set, get) => ({
 
     if (typeof window !== "undefined") {
       localStorage.removeItem(CART_STORAGE_KEY);
+      localStorage.removeItem(ADDRESS_STORAGE_KEY);
       localStorage.removeItem(LAST_ACTION_STORAGE_KEY);
     }
 
@@ -340,6 +369,7 @@ export const useCartStore = create<ICartStore>((set, get) => ({
       cartItems: [],
       appliedCoupon: null,
       lastAction: getInitialLastAction(),
+      address: null,
     });
   },
 
