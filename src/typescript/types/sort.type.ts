@@ -1,0 +1,1 @@
+export type GrocerySortOption = "default" | "low-to-high" | "high-to-low";
